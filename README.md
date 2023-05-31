@@ -1,4 +1,4 @@
-# hxcpp
+# hxcpp 4.3.2 with SomeoneSom's color hex fix
 
 [![Build Status](https://dev.azure.com/HaxeFoundation/GitHubPublic/_apis/build/status/HaxeFoundation.hxcpp?branchName=master)](https://dev.azure.com/HaxeFoundation/GitHubPublic/_build/latest?definitionId=3&branchName=master)
 
