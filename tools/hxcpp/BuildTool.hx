@@ -45,7 +45,7 @@ typedef Linkers = Hash<Linker>;
 
 class BuildTool
 {
-   public inline static var SupportedVersion = 430;
+   public inline static var SupportedVersion = 400;
 
    var mDefines:Hash<String>;
    var mCurrentIncludeFile:String;
@@ -136,17 +136,13 @@ class BuildTool
       arm64 = mDefines.exists("HXCPP_ARM64");
       if (m64==m32 && !arm64)
       {
-         var arch = getArch();
-
          // Default to the current OS version.  windowsArm runs m32 code too
-         m64 = arch=="m64";
-         m32 = arch=="m32";
-         arm64 = arch=="arm64";
+         m64 = !isWindowsArm && !isWindows && getIs64();
+         m32 = !m64;
          mDefines.remove(m32 ? "HXCPP_M64" : "HXCPP_M32");
-         set64(mDefines,m64,arm64);
       }
 
-      Profile.setEntry("parse xml");
+      Profile.setEntry("parse xml"); 
 
       include("toolchain/setup.xml");
 
@@ -223,7 +219,7 @@ class BuildTool
 
       var cached = CompileCache.init(mDefines);
 
-      Profile.setEntry("setup cache");
+      Profile.setEntry("setup cache"); 
 
       if (inJob=="cache")
       {
@@ -271,14 +267,14 @@ class BuildTool
 
       if (inTargets.remove("clear"))
       {
-         Profile.setEntry("clear");
+         Profile.setEntry("clear"); 
          for(target in mTargets.keys())
             cleanTarget(target,false);
        }
 
       if (inTargets.remove("clean"))
       {
-         Profile.setEntry("clean");
+         Profile.setEntry("clean"); 
          for(target in mTargets.keys())
             cleanTarget(target,true);
       }
@@ -289,7 +285,7 @@ class BuildTool
          destination = null;
       }
 
-      Profile.setEntry("build");
+      Profile.setEntry("build"); 
       for(target in inTargets)
          buildTarget(target,destination);
 
@@ -1301,20 +1297,18 @@ class BuildTool
       return result;
    }
 
-   private static function getArch():String
+   private static function getIs64():Bool
    {
       if (isWindows)
       {
-         if (isWindowsArm)
-            return "arm64";
          var architecture = Sys.getEnv ("PROCESSOR_ARCHITEW6432");
          if (architecture != null && architecture.indexOf ("64") > -1)
          {
-            return "m64";
+            return true;
          }
          else
          {
-            return "m32";
+            return false;
          }
       }
       else
@@ -1325,17 +1319,13 @@ class BuildTool
          process.exitCode();
          process.close();
 
-         if ( (output.indexOf("aarch64") > -1) ||  (output.indexOf("arm64") > -1) )
+         if (output.indexOf("64") > -1)
          {
-            return "arm64";
-         }
-         else if (output.indexOf("64") > -1)
-         {
-            return "m64";
+            return true;
          }
          else
          {
-            return "m32";
+            return false;
          }
       }
    }
@@ -1383,7 +1373,7 @@ class BuildTool
       {
          var cores = ~/Total Number of Cores: (\d+)/;
          var output = ProcessManager.runProcess("", "/usr/sbin/system_profiler", [ "-detailLevel", "full", "SPHardwareDataType" ], true, false, true, true);
-         if (output != null && cores.match(output))
+         if (cores.match(output))
          {
             result = cores.matched(1);
          }
@@ -1541,11 +1531,8 @@ class BuildTool
          var binDir = isWindows ? "Windows" : isMac ? "Mac64" : isLinux ? "Linux64" : null;
          if (binDir==null)
             Log.error("Cppia is not supported on this host.");
-         var arch = getArch();
          var binDir = isWindows ? (isWindowsArm ? "WindowsArm64" : "Windows64" ) :
-                       isMac ? "Mac64" :
-                       isLinux ? ("Linux64") :
-                       null;
+                       isMac ? "Mac64" : isLinux ? "Linux64" : null;
          var exe = '$HXCPP/bin/$binDir/Cppia' + (isWindows ? ".exe" : "");
          if (!isWindows)
          {
@@ -1616,7 +1603,7 @@ class BuildTool
 
       isRPi = isLinux && Setup.isRaspberryPi();
 
-      is64 = getArch()!="m32";
+      is64 = getIs64();
       var dirtyList = new Array<String>();
 
       var a = 0;
@@ -1714,7 +1701,7 @@ class BuildTool
            }
       }
 
-      Profile.setEntry("setup");
+      Profile.setEntry("setup"); 
       Setup.initHXCPPConfig(defines);
 
       if (HXCPP=="" && env.exists("HXCPP"))
@@ -2018,7 +2005,7 @@ class BuildTool
       }
       else if ( (new EReg("linux","i")).match(os) )
       {
-         set64(defines,m64,arm64);
+         set64(defines,m64);
          // Cross-compile?
          if(defines.exists("windows"))
          {
@@ -2038,7 +2025,7 @@ class BuildTool
                defines.set("HXCPP_ARMV7","1");
                m64 = false;
             }
-            else if (arm64 || defines.exists("HXCPP_LINUX_ARM64"))
+            else if (defines.exists("HXCPP_LINUX_ARM64"))
             {
                defines.set("noM32","1");
                defines.set("noM64","1");
@@ -2050,7 +2037,7 @@ class BuildTool
       }
       else if ( (new EReg("mac","i")).match(os) )
       {
-         set64(defines,m64, arm64);
+         set64(defines,m64);
          // Cross-compile?
          if (defines.exists("linux"))
          {
@@ -2065,7 +2052,7 @@ class BuildTool
             defines.set("toolchain","mac");
             defines.set("macos","macos");
             defines.set("apple","apple");
-            defines.set("BINDIR", arm64 ? "MacArm64" : m64 ? "Mac64":"Mac");
+            defines.set("BINDIR",m64 ? "Mac64":"Mac");
          }
       }
    }

@@ -1114,8 +1114,7 @@ int mbedtls_mpi_sub_int( mbedtls_mpi *X, const mbedtls_mpi *A, mbedtls_mpi_sint 
  * Helper for mbedtls_mpi multiplication
  */
 static
-// Also a problem on x64 rosetta
-#if defined(__APPLE__)
+#if defined(__APPLE__) && defined(__arm__)
 /*
  * Apple LLVM version 4.2 (clang-425.0.24) (based on LLVM 3.2svn)
  * appears to need this to prevent bad ARM code generation at -O3.

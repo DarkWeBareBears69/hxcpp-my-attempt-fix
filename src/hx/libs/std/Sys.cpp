@@ -99,19 +99,16 @@ void _hx_std_put_env( String e, String v )
 #ifdef HX_WINRT
    // Do nothing
 #elif defined(NEKO_WINDOWS)
-   String set = e + HX_CSTRING("=") + (v != null()?v:"");
+   String set = e + HX_CSTRING("=") + v;
 
    #ifdef HX_SMART_STRINGS
    if (set.isUTF16Encoded())
-      _wputenv(set.wchar_str());
+      _wputenv( set.wchar_str() );
    else
    #endif
       putenv(set.utf8_str());
 #else
-   if (v == null())
-      unsetenv(e.utf8_str());
-   else
-      setenv(e.utf8_str(),v.utf8_str(),1);
+   setenv(e.utf8_str(),v.utf8_str(),1);
 #endif
 }
 
@@ -226,9 +223,9 @@ bool _hx_std_set_cwd( String d )
 {
    #if !defined(HX_WINRT) && !defined(EPPC)
 #ifdef NEKO_WINDOWS
-   return SetCurrentDirectoryW(d.wchar_str()) == 0;
+   return SetCurrentDirectoryW(d.__WCStr()) == 0;
 #else
-   return chdir(d.utf8_str()) == 0;
+   return chdir(d.__s) == 0;
 #endif
    #else
    return false;
@@ -349,19 +346,18 @@ bool _hx_std_sys_exists( String path )
    #ifdef EPPC
    return true;
    #else
-
+   
 #ifdef NEKO_WINDOWS
-   const wchar_t * wpath = path.wchar_str();
+   const wchar_t * wpath = path.__WCStr();
    hx::EnterGCFreeZone();
    bool result = GetFileAttributesW(wpath) != INVALID_FILE_ATTRIBUTES;
 #else
    struct stat st;
    hx::EnterGCFreeZone();
-   hx::strbuf buf;
-   bool result = stat(path.utf8_str(&buf),&st) == 0;
+   bool result = stat(path.__s,&st) == 0;
 #endif
    hx::ExitGCFreeZone();
-
+   
    return result;
    #endif
 }
@@ -559,13 +555,12 @@ bool _hx_std_sys_create_dir( String path, int mode )
    return true;
    #else
 #ifdef NEKO_WINDOWS
-   const wchar_t * wpath = path.wchar_str();
+   const wchar_t * wpath = path.__WCStr();
    hx::EnterGCFreeZone();
    bool err = _wmkdir(wpath);
 #else
    hx::EnterGCFreeZone();
-   hx::strbuf buf;
-   bool err = mkdir(path.utf8_str(&buf), mode);
+   bool err = mkdir(path.__s,mode);
 #endif
    hx::ExitGCFreeZone();
    return !err;
@@ -666,7 +661,7 @@ Array<String> _hx_std_sys_read_dir( String p )
    Array<String> result = Array_obj<String>::__new();
 
 #if defined(NEKO_WINDOWS)
-   const wchar_t *path = p.wchar_str();
+   const wchar_t *path = p.__WCStr();
    size_t len = wcslen(path);
    if (len>MAX_PATH)
       return null();
@@ -714,7 +709,7 @@ Array<String> _hx_std_sys_read_dir( String p )
    }
    FindClose(handle);
 #elif !defined(EPPC)
-   const char *name = p.utf8_str();
+   const char *name = p.__s;
    hx::EnterGCFreeZone();
    DIR *d = opendir(name);
    if( d == NULL )
@@ -906,3 +901,5 @@ int _hx_std_sys_get_pid()
    return (getpid());
 #   endif
 }
+
+

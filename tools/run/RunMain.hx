@@ -31,7 +31,7 @@ class RunMain
       log("     neko build.n");
 
       var gotUserResponse = false;
-      sys.thread.Thread.create(function() {
+      neko.vm.Thread.create(function() {
          Sys.sleep(30);
          if (!gotUserResponse)
          {

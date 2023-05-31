@@ -125,7 +125,6 @@ public:
          case vtInt: EnsureIntStorage(); break;
          case vtFloat: EnsureFloatStorage(); break;
          case vtString: EnsureStringStorage(); break;
-         case vtInt64: EnsureInt64Storage(); break;
          default: EnsureObjectStorage();
       }
    }
@@ -145,13 +144,12 @@ public:
          case Variant::typeDouble: EnsureFloatStorage(); break;
          case Variant::typeInt: EnsureIntStorage(); break;
          case Variant::typeBool: EnsureBoolStorage(); break;
-         case Variant::typeInt64: EnsureInt64Storage(); break;
+         case Variant::typeInt64: EnsureObjectStorage(); break;
       }
    }
 
 
    void MakeIntArray();
-   void MakeInt64Array();
    void MakeObjectArray();
    void MakeFloatArray();
    void MakeBoolArray();
@@ -164,8 +162,8 @@ public:
    void EnsureStorage(const double &inValue) { EnsureFloatStorage(); }
    void EnsureStorage(const float &inValue) { EnsureFloatStorage(); }
    void EnsureStorage(const int &inValue) { EnsureIntStorage(); }
-   void EnsureStorage(const cpp::Int64 &inValue) { EnsureInt64Storage(); }
-   void EnsureStorage(const cpp::UInt64 &inValue) { EnsureInt64Storage(); }
+   void EnsureStorage(const cpp::Int64 &inValue) { EnsureObjectStorage(); }
+   void EnsureStorage(const cpp::UInt64 &inValue) { EnsureObjectStorage(); }
    void EnsureStorage(const null &inValue) { EnsureNullStorage(); }
    template<typename T>
    void EnsureStorage(const T &inValue) { EnsureObjectStorage(); }
@@ -183,7 +181,6 @@ public:
             MakeBoolArray();
             break;
          case hx::arrayInt:
-         case hx::arrayInt64:
          case hx::arrayFloat:
          case hx::arrayString:
             MakeObjectArray();
@@ -203,7 +200,6 @@ public:
             MakeStringArray();
             break;
          case hx::arrayInt:
-         case hx::arrayInt64:
          case hx::arrayFloat:
          case hx::arrayBool:
             MakeObjectArray();
@@ -220,7 +216,6 @@ public:
          case hx::arrayFixed:
             return;
          case hx::arrayInt:
-         case hx::arrayInt64:
          case hx::arrayEmpty:
             MakeFloatArray();
             break;
@@ -237,7 +232,6 @@ public:
       {
          case hx::arrayNull:
          case hx::arrayInt:
-         case hx::arrayInt64:
          case hx::arrayFloat:
          case hx::arrayObject:
          case hx::arrayFixed:
@@ -251,28 +245,6 @@ public:
             break;
       }
    }
-
-   inline void EnsureInt64Storage()
-   {
-      switch(store)
-      {
-         case hx::arrayNull:
-         case hx::arrayInt64:
-         case hx::arrayFloat:
-         case hx::arrayObject:
-         case hx::arrayFixed:
-            return;
-         case hx::arrayInt:
-         case hx::arrayEmpty:
-            MakeInt64Array();
-            break;
-         case hx::arrayBool:
-         case hx::arrayString:
-            MakeObjectArray();
-            break;
-      }
-   }
-
    inline void EnsureObjectStorage()
    {
       switch(store)
@@ -283,7 +255,6 @@ public:
             return;
          case hx::arrayEmpty:
          case hx::arrayInt:
-         case hx::arrayInt64:
          case hx::arrayFloat:
          case hx::arrayBool:
          case hx::arrayString:
@@ -302,7 +273,6 @@ public:
             return;
          case hx::arrayEmpty:
          case hx::arrayInt:
-         case hx::arrayInt64:
          case hx::arrayFloat:
          case hx::arrayBool:
             MakeObjectArray();

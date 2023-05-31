@@ -19,7 +19,6 @@ enum ArrayStore
    arrayFloat,
    arrayString,
    arrayObject,
-   arrayInt64
 };
 
 enum ArrayConvertId
@@ -32,8 +31,7 @@ enum ArrayConvertId
    aciPodBase      = 1,
 };
 
-template<typename T>
-struct ReturnNull { typedef T type; };
+template<typename T> struct ReturnNull { typedef T type; };
 template<> struct ReturnNull<int> { typedef Dynamic type; };
 template<> struct ReturnNull<double> { typedef Dynamic type; };
 template<> struct ReturnNull<float> { typedef Dynamic type; };
@@ -44,7 +42,7 @@ template<> struct ReturnNull<unsigned char> { typedef Dynamic type; };
 template<> struct ReturnNull<short> { typedef Dynamic type; };
 template<> struct ReturnNull<unsigned short> { typedef Dynamic type; };
 template<> struct ReturnNull<unsigned int> { typedef Dynamic type; };
-template<> struct ReturnNull<::cpp::Int64> { typedef Dynamic type; };
+
 
 template<typename T>
 struct ArrayTraits { enum { StoreType = arrayObject }; };
@@ -53,7 +51,8 @@ template<> struct ArrayTraits<float> { enum { StoreType = arrayFloat}; };
 template<> struct ArrayTraits<double> { enum { StoreType = arrayFloat}; };
 template<> struct ArrayTraits<Dynamic> { enum { StoreType = arrayObject }; };
 template<> struct ArrayTraits<String> { enum { StoreType = arrayString }; };
-template<> struct ArrayTraits<::cpp::Int64> { enum { StoreType = arrayInt64 }; };
+
+
 
 }
 
@@ -443,7 +442,6 @@ template<> inline bool TypeContainsPointers(double *) { return false; }
 template<> inline bool TypeContainsPointers(float *) { return false; }
 template<> inline bool TypeContainsPointers(short *) { return false; }
 template<> inline bool TypeContainsPointers(unsigned char *) { return false; }
-template<> inline bool TypeContainsPointers(::cpp::Int64 *) { return false; }
 
 template<typename TYPE> inline bool ContainsPointers()
 {
@@ -461,7 +459,6 @@ template<> inline bool *NewNull<bool>() { bool b=0; return (bool *)hx::NewGCPriv
 template<> inline double *NewNull<double>() { double d=0.0; return (double *)hx::NewGCPrivate(&d,sizeof(d)); }
 template<> inline float *NewNull<float>() { float d=0.0f; return (float *)hx::NewGCPrivate(&d,sizeof(d)); }
 template<> inline unsigned char *NewNull<unsigned char>() { unsigned char u=0; return (unsigned char *)hx::NewGCPrivate(&u,sizeof(u)); }
-template<> inline ::cpp::Int64 *NewNull<::cpp::Int64>() { ::cpp::Int64 i=0; return (::cpp::Int64 *)hx::NewGCPrivate(&i,sizeof(i)); }
 
 
 bool DynamicEq(const Dynamic &a, const Dynamic &b);
@@ -478,7 +475,6 @@ template<> struct ArrayClassId<signed int> { enum { id=hx::clsIdArrayInt }; };
 template<> struct ArrayClassId<float> { enum { id=hx::clsIdArrayFloat32 }; };
 template<> struct ArrayClassId<double> { enum { id=hx::clsIdArrayFloat64 }; };
 template<> struct ArrayClassId<String> { enum { id=hx::clsIdArrayString }; };
-template<> struct ArrayClassId<::cpp::Int64> { enum { id=hx::clsIdArrayInt64 }; };
 
 // sort...
 #include <algorithm>

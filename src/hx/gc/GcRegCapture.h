@@ -2,7 +2,6 @@
 #define HX_GC_HELPERS_INCLUDED
 
 #if defined(HX_WINDOWS) && defined(HXCPP_ARM64)
-// Eg, Microsoft Surface 
 #define HXCPP_CAPTURE_SETJMP
 #endif
 
@@ -16,13 +15,6 @@
 
    #if (defined(HX_MACOS) || (defined(HX_WINDOWS) && !defined(HX_WINRT)) || defined(_XBOX_ONE)) && defined(HXCPP_M64)
       #define HXCPP_CAPTURE_x64
-   #endif
-
-   #if defined(HXCPP_ARM64)
-      //#define HXCPP_CAPTURE_ARM64
-      // Awlays use setjmp on arm64
-      #include <setjmp.h>
-      #define HXCPP_CAPTURE_SETJMP
    #endif
 
 #endif
@@ -84,34 +76,7 @@ void CaptureX64(RegisterCaptureBuffer &outBuffer);
 #define CAPTURE_REG_START (int *)(&mRegisterBuf)
 #define CAPTURE_REG_END (int *)(&mRegisterBuf+1)
 
-
-#elif defined(HXCPP_CAPTURE_ARM64) // }  {
-
-
-struct RegisterCaptureBuffer
-{
-   void *x19;
-   void *x20;
-   void *x21;
-   void *x22;
-   void *x23;
-   void *x24;
-   void *x25;
-   void *x26;
-   void *x27;
-   void *x28;
-};
-
-void CaptureArm64(RegisterCaptureBuffer &outBuffer);
-
-#define CAPTURE_REGS \
-   hx::CaptureArm64(mRegisterBuf);
-
-#define CAPTURE_REG_START (int *)(&mRegisterBuf)
-#define CAPTURE_REG_END (int *)(&mRegisterBuf+1)
-
-
-#else //  }  default capture... {
+#else 
 
 
 class RegisterCapture

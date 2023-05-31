@@ -244,8 +244,7 @@ int mysql_select_db( MYSQL *m, const char *dbname ) {
 	int pcount = 0;
 	myp_begin_packet(p,0);
 	myp_write_byte(p,COM_INIT_DB);
-	// send dbname without trailing 0x00
-	myp_write(p,dbname,strlen(dbname));
+	myp_write_string(p,dbname);
 	if( !myp_send_packet(m,p,&pcount) ) {
 		error(m,"Failed to send packet",NULL);
 		return -1;
@@ -423,11 +422,6 @@ int mysql_real_escape_string( MYSQL *m, char *sout, const char *sin, int length 
 }
 
 void mysql_close( MYSQL *m ) {
-	MYSQL_PACKET *p = &m->packet;
-	int pcount = 0;
-	myp_begin_packet(p,0);
-	myp_write_byte(p,COM_QUIT);
-	myp_send_packet(m,p,&pcount);
 	myp_close(m);
 	free(m->packet.buf);
 	free(m->infos.server_version);

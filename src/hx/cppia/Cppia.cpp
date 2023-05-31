@@ -8238,7 +8238,7 @@ void TypeData::link(CppiaModule &inModule)
                arrayType = arrUnsignedChar;
             else if (t==HX_CSTRING("Any"))
                arrayType = arrAny;
-            else if (t==HX_CSTRING("Object") || t==HX_CSTRING(".cpp.Int64"))
+            else if (t==HX_CSTRING("Object"))
                arrayType = arrObject;
             else
             {
